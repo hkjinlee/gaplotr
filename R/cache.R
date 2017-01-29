@@ -9,7 +9,7 @@ cache.new <- function(config) {
   # 해당 데이터가 캐시되어있으면 그대로 리턴하고, 없으면 get.func를 호출해 생성
   # 캐시 조건: 파일이 존재하고 최종변경시각이 expire.hour 이내
   this$get <- function(site.id, obj, get.func) {
-    v('get() started')
+    debug('get() started')
     
     cache.dir <- file.path(config$dir, site.id)
     if (!file.exists(cache.dir)) {
@@ -17,18 +17,16 @@ cache.new <- function(config) {
     }
     cache.file <- file.path(cache.dir, digest::digest(obj, algo='md5'))
     
-    v('cache.file = %s', cache.file)
-    
     if (file.exists(cache.file) & Sys.time() - file.info(cache.file)$mtime > config$expire.hour) {
-      v('cache valid')
+      info('cache valid for %s/%s', site.id, cache.file)
       load(cache.file)
     } else {
-      v('cache invalid or old')
+      info('cache invalid or old for %s/%s', site.id, cache.file)
       data <- get.func(site.id, obj)
       save(data, file=cache.file)
     }
     
-    v('get() : data = %s', data)
+    debug('get() : data = %s', data)
     data
   }
 

@@ -3,4 +3,3 @@
 export(gaplotr)
 import(jsonlite)
 import(rga)
-importFrom(httr,POST)

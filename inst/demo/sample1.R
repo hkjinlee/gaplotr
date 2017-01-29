@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
-source('gaplotr.R')
+library(gaplotr)
 
-gaplotr <- GAplotR(file.path('etc', 'config.json'))
+gaplotr <- gaplotr::gaplotr()
 
 site.id <- 'onestore_app'
 json <- '{

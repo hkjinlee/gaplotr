@@ -7,8 +7,9 @@ dict.new <- function() {
   shelf <- list()
   
   # 사전 추가
-  this$add <- function(domain, csvfile) {
-    v('adding dictionaries for %s from %s', domain, csvfile)
+  this$add <- function(domain) {
+    csvfile <- system.file(file.path('etc', sprintf('%s_name.csv', domain)), package='gaplotr')
+    info('adding dictionaries for %s from %s', domain, csvfile)
     shelf[[domain]] <- utils::read.csv(csvfile, comment.char='#', sep='', stringsAsFactors=F)
   }
   

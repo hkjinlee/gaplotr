@@ -23,7 +23,7 @@ ggplot.new <- function(config, dict) {
   # 차트 객체를 생성
   # - type: { 'bar', 'line' }
   this$render <- function(data, type, dimensions, metrics, title) {
-    logger$v('render() started')
+    info('render() started')
     
     # 차트 drawing. 여러 개의 metric을 동시에 나타낼 수 있음
     gg <- ggplot2::ggplot(data, aes_string(x=dimensions[1]))
@@ -58,7 +58,7 @@ ggplot.new <- function(config, dict) {
     file.path <- file.path(config$dir, file.name)
     ggplot2::ggsave(file.path, width=config$width, height=config$height, dpi=config$dpi)
     
-    logger$v('Generated figure = %s', file.path)
+    info('Generated figure = %s', file.path)
     file.path
   }
   
