@@ -29,7 +29,7 @@ GAplotR.cache <- function(config.cache, debug=T) {
     
     v('cache.file = %s', cache.file)
     
-    if (file.exists(cache.file) & Sys.time() - file.mtime(cache.file) > config.cache$expire.hour) {
+    if (file.exists(cache.file) & Sys.time() - file.info(cache.file)$mtime > config.cache$expire.hour) {
       v('cache valid')
       load(cache.file)
     } else {
