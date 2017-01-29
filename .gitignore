@@ -4,8 +4,9 @@
 .RData
 .Ruserdata
 
-# 설정파일
-etc/config.json
+# 패키지 개발과정에서 생성되는 파일들
+NAMESPACE
+man/**
 
 # rga의 OAuth 인증정보 파일
 sites/*.json

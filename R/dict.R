@@ -1,17 +1,16 @@
 # metric이나 dimension의 이름을 다국어로 표시하기 위한 사전
 
-GAplotR.dict <- function(logger) {
+dict.new <- function() {
   this <- new.env()
-  class(this) <- 'GAplotR.dict'
-  logger <- logger
-  
+
   # 여러 개의 사전을 저장할 내부 list
   shelf <- list()
   
   # 사전 추가
-  this$add <- function(domain, csvfile) {
-    logger$v('adding dictionaries for %s from %s', domain, csvfile)
-    shelf[[domain]] <- read.csv(csvfile, comment.char='#', sep='', stringsAsFactors=F)
+  this$add <- function(domain) {
+    csvfile <- system.file(file.path('etc', sprintf('%s_name.csv', domain)), package='gaplotr')
+    info('adding dictionaries for %s from %s', domain, csvfile)
+    shelf[[domain]] <- utils::read.csv(csvfile, comment.char='#', sep='', stringsAsFactors=F)
   }
   
   # 사전에서 단어 lookup
