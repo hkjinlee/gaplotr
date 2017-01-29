@@ -1,0 +1,11 @@
+# GA에서 사용되는 측정값(metric)의 다국어사전
+# 첫번째 컬럼은 비워두어야 row.name으로 사용됨
+                   ko
+users              사용자
+newUsers           신규사용자
+sessions           세션
+bounces            이탈
+bounceRate         이탈률
+goalStartsAll      전환시작
+goalCompletionsAll 전환완료
+goalAbandonsAll    전환이탈

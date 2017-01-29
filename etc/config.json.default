@@ -1,0 +1,21 @@
+{
+  "debug": true,
+  "ga": {
+    "client_id": "63451810083-rnehcshmkhvs0uabbdosm39mi96dentr.apps.googleusercontent.com",
+    "client_secret": "zU1bJ-Az21_6CzU0-zNVQvtX"
+  },
+  "ggplot": {
+    "dir": "figure",
+    "fontfamily": "AppleGothic",
+    "width": 3,
+    "height": 3,
+    "dpi": 80
+  },
+  "cache": {
+    "dir": "cache",
+    "expire.hour": 1
+  },
+  "sites": {
+    "dir": "sites"
+  }
+}

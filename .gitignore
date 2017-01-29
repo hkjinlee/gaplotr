@@ -1,0 +1,16 @@
+# R의 시스템 파일들
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# 설정파일
+etc/config.json
+
+# rga의 OAuth 인증정보 파일
+sites/*.json
+sites/*.rga
+
+# 생성되는 파일들
+cache/**
+figure/**
