@@ -22,7 +22,7 @@ GAplotR.cache <- function(config.cache, debug=T) {
     v('get() started')
     
     cache.dir <- file.path(config.cache$dir, site.id)
-    if (!dir.exists(cache.dir)) {
+    if (!file.exists(cache.dir)) {
       dir.create(cache.dir, recursive=T)
     }
     cache.file <- file.path(cache.dir, digest(obj, algo='md5'))

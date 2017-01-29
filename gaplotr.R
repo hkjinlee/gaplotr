@@ -114,7 +114,7 @@ GAplotR <- function(config.json=file.path('etc', 'config.json')) {
       ggtitle(title)
     
     # 디렉토리 없으면 생성
-    if (!dir.exists(config$ggplot$dir)) {
+    if (!file.exists(config$ggplot$dir)) {
       dir.create(config$ggplot$dir)
     }
     filename <- file.path(config$ggplot$dir, filename)
