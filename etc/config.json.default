@@ -1,22 +1,31 @@
 {
-  "debug": true,
+  // 로그메시지 출력
+  "verbose": true,
+  
+  // GA 설정: 구글 OAuth 실행시 연결될 클라이언트를 "LINE statsbot"으로 설정함
   "ga": {
     "client_id": "63451810083-rnehcshmkhvs0uabbdosm39mi96dentr.apps.googleusercontent.com",
     "client_secret": "zU1bJ-Az21_6CzU0-zNVQvtX"
   },
+  
+  // ggplot용 설정
+  // 색상 리스트는 http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6 에서 가져옴
   "ggplot": {
     "dir": "figure",
     "fontfamily": "AppleGothic",
-    // http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
     "colors": [ "#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02" ],
     "width": 3,
     "height": 3,
     "dpi": 80
   },
+  
+  // 캐쉬 설정
   "cache": {
     "dir": "cache",
     "expire.hour": 1
   },
+  
+  // 사이트 설정
   "sites": {
     "dir": "sites"
   }
