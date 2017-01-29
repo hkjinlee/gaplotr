@@ -1,7 +1,7 @@
 # GA API 호출을 최소화하기 위해 local file로 데이터를 저장해두는 캐시
 # cache/{site.id}/{request json의 md5} 형태로 저장
 
-library(digest)
+#' @import digest
 
 cache.new <- function(config) {
   this <- new.env()

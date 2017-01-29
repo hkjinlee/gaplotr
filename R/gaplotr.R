@@ -5,8 +5,7 @@
 
 #' @import jsonlite
 #' @import rga
-
-library(httr)
+#' @import httr
 
 #'
 #' @export
@@ -23,7 +22,7 @@ gaplotr <- function(config.json = NULL) {
   loglevel(config$loglevel)
   
   # 주요 유틸리티들 초기화
-  info('START Initialization of cache, dict, ggplot...')
+  info('START Initialization of cache, dict, plotter...')
   cache <- cache.new(config$cache)
   
   # 디멘전과 메트릭에 대한 번역테이블 초기화
@@ -31,10 +30,10 @@ gaplotr <- function(config.json = NULL) {
   dict$add('dimension')
   dict$add('metric')
   
-  # ggplot용 유틸리티 초기화
-  ggplot <- ggplot.new(config$ggplot, dict)
+  # ggplot, grid용 유틸리티 초기화
+  plotter <- plotter.new(config$plotter, dict)
 
-  info('END Initialization of cache, dict, ggplot...')
+  info('END Initialization of cache, dict, plotter...')
   
   # rga 객체의 이름 조회
   get_ga_name <- function(site.id) {
@@ -107,10 +106,16 @@ gaplotr <- function(config.json = NULL) {
     metrics <- gsub('^ga:', '', params$metrics)
 
     # 차트 render
-    gg <- ggplot$render(data, type, dimensions, metrics, title)
+    renderer.func <- function() {
+      if (type != 'table') {
+        plotter$chartRenderer(data, type, dimensions, metrics, title)
+      } else {
+        plotter$tableRenderer(data, dimensions, metrics, title)
+      }
+    }
 
     # 차트 저장
-    file.path <- ggplot$save(gg, filename)
+    file.path <- plotter$save(renderer.func, filename)
     
     return(file.path)
   }

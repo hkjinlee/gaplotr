@@ -8,15 +8,16 @@
     "client_secret": "zU1bJ-Az21_6CzU0-zNVQvtX"
   },
   
-  // ggplot용 설정
+  // plotter용 설정
   // 색상 리스트는 http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6 에서 가져옴
-  "ggplot": {
+  "plotter": {
     "dir": "figure",
     "fontfamily": "AppleGothic",
     "colors": [ "#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02" ],
     "width": 3,
     "height": 3,
-    "dpi": 80
+    "dpi": 80,
+    "table.maxrows": 7
   },
   
   // 캐쉬 설정
