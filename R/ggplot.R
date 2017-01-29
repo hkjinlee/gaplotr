@@ -24,9 +24,10 @@ ggplot.new <- function(config, dict) {
   # - type: { 'bar', 'line' }
   this$render <- function(data, type, dimensions, metrics, title) {
     info('render() started')
+    debug('type = %s, dimensions = %s, metrics = %s', type, dimensions, metrics)
     
     # 차트 drawing. 여러 개의 metric을 동시에 나타낼 수 있음
-    gg <- ggplot2::ggplot(data, aes_string(x=dimensions[1]))
+    gg <- ggplot2::ggplot(data, ggplot2::aes_string(x=dimensions[1]))
     gg <- Reduce(function(g, i) {
       color <- ifelse(type == 'bar', 'black', config$colors[i])
       fill <- ifelse(type == 'bar', config$colors[i], 'black')
@@ -38,7 +39,7 @@ ggplot.new <- function(config, dict) {
     # 차트 제목 및 가로세로축 이름 설정
     xlab <- dict$lookup('dimension', dimensions[1]) 
     ylab <- paste(dict$lookup('metric', metrics), collapse=',')
-    logger$v('xlab = %s, ylab = %s', xlab, ylab)
+    debug('xlab = %s, ylab = %s', xlab, ylab)
     gg <- gg + ggplot2::xlab(xlab) + ggplot2::ylab(ylab) + ggplot2::ggtitle(title)
    
     # 축 눈금값 변환

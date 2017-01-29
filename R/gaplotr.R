@@ -96,16 +96,15 @@ gaplotr <- function(config.json = NULL) {
 
   # 차트 이미지를 생성
   # - type: { 'bar', 'line' }
-  this$generateChart <- function(site.id, type, json, title, filename) {
-    debug('generateChart(): site.id=%s, type=%s, json=%s', site.id, type, json)
+  this$generateChart <- function(site.id, type, params, title, filename) {
+    debug('generateChart(): site.id=%s, type=%s, params=%s', site.id, type, params)
 
     # 차트용 데이터 fetch. 유효한 캐쉬가 없으면 getData()를 호출하여 직접 가져옴
-    args <- jsonlite::fromJSON(json)
-    data <- cache$get(site.id, args, getData)
+    data <- cache$get(site.id, params, getData)
     
     # dimension과 metric 추출 ('ga:visits' -> 'visit'로 변경)
-    dimensions <- gsub('^ga:', '', args$dimensions)
-    metrics <- gsub('^ga:', '', args$metrics)
+    dimensions <- gsub('^ga:', '', params$dimensions)
+    metrics <- gsub('^ga:', '', params$metrics)
 
     # 차트 render
     gg <- ggplot$render(data, type, dimensions, metrics, title)
