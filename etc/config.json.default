@@ -7,6 +7,8 @@
   "ggplot": {
     "dir": "figure",
     "fontfamily": "AppleGothic",
+    // http://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=6
+    "colors": [ "#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02" ],
     "width": 3,
     "height": 3,
     "dpi": 80

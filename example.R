@@ -11,5 +11,7 @@ json <- '{
   "start-date": "7daysAgo",
   "end-date": "today"
 }'
+chart.type <- 'line'
+chart.title <- '차트'
 
-gaplotr$generateChart(site.id, json, '차트', 'example.png')
+gaplotr$generateChart(site.id, chart.type, json, chart.title, 'example.png')
