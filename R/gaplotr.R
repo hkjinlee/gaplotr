@@ -5,7 +5,6 @@
 
 #' @import jsonlite
 #' @import rga
-#' @import httr
 
 #'
 #' @export

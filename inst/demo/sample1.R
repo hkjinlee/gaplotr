@@ -1,6 +1,5 @@
 #!/usr/bin/env Rscript
 
-library(httr)
 library(gaplotr)
 
 gaplotr <- gaplotr::gaplotr()
