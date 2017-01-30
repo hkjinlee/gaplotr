@@ -4,6 +4,7 @@
   
   // GA 설정: 구글 OAuth 실행시 연결될 클라이언트를 "LINE statsbot"으로 설정함
   "ga": {
+    "dir": "ga",
     "client_id": "63451810083-rnehcshmkhvs0uabbdosm39mi96dentr.apps.googleusercontent.com",
     "client_secret": "zU1bJ-Az21_6CzU0-zNVQvtX"
   },
@@ -24,10 +25,5 @@
   "cache": {
     "dir": "cache",
     "expire.hour": 1
-  },
-  
-  // 사이트 설정
-  "sites": {
-    "dir": "sites"
   }
 }

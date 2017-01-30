@@ -13,20 +13,20 @@ library(devtools)
 install_github('hkjinlee/gaplotr)
 ```
 
-## Sites configuration
-You need to start from adding new site configuration. Each site corresponds to a specific [view of Google Analytics](https://support.google.com/analytics/answer/2649553?hl=en). You can add multiple sites by providing id of those views.
+## GA configuration
+You need to start from adding new [views of Google Analytics](https://support.google.com/analytics/answer/2649553?hl=en).
 
 ### Configuration file format: JSON
-Create `site` directory under your working directory, and put a per-site configuration file there, which looks like this. Change `view_id` to one of your own.
+Create `views` directory under your working directory, and put a per-site configuration file there, which looks like this. Change `view_id` to one of your own.
 ```{json}
 {
   'view_id': 'ga:XXXXXXX'
 }
 ```
 ### Multiple configuration files
-You can add as many sites at the same time. Configuration files can have any name you like, once it has '.json' extension.
+You can add as many views at the same time. Configuration files can have any name you like, once it has '.json' extension.
 ```{sh}
-hkjinlee-mac:sites hkjinlee$ ls
+hkjinlee-mac:views hkjinlee$ ls
 onestore_app.json    onestore_web.json
 ```
 

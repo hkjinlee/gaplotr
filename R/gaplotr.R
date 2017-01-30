@@ -34,53 +34,43 @@ gaplotr <- function(config.json = NULL) {
 
   info('END Initialization of cache, dict, plotter...')
   
-  # rga 객체의 이름 조회
-  get_ga_name <- function(site.id) {
-    paste0('ga:', site.id)
-  }
-  
   # 사이트 정보 로딩 및 OAuth 실행
-  this$sites <- list()
-  Map(function(site.file) {
-    info('loading site: %s', site.file)
-    site.id <- gsub('\\.json$', '', site.file)
+  # 'onestore_app'이라는 view가 있을 경우
+  # - this$views는 list
+  # - this$views$onestore_app은 environment
+  # - this$views$onestore_app$view_id에 view id 저장
+  # - this$views$onestore_app$rga에 rga 객체 저장
+  this$views <- list()
+  Map(function(view.json) {
+    info('loading GA info from %s', view.json)
+    view.name <- gsub('\\.json$', '', basename(view.json))
+    dir <- dirname(view.json)
 
-    info('OAuth started: site.id = %s', site.id)
-    
-    # sites의 view.id 정보 및 인증정보 저장파일
-    site <- jsonlite::fromJSON(file.path(config$sites$dir, site.file))
-    rga.file <- file.path(config$sites$dir, paste0(site.id, '.rga'))
-    
+    # JSON파일로부터 환경 불러옴
+    view.env <- list2env(jsonlite::fromJSON(view.json))
+
     # OAuth 인증
-    rga::rga.open(instance = get_ga_name(site.id), 
+    info('OAuth started: view.name = %s', view.name)
+    rga::rga.open(instance = 'ga', 
              client.id = config$ga$client_id,
              client.secret = config$ga$client_secret,
-             where = rga.file,
-             envir = this)
-    info('OAuth ended for %s', site.id)
+             where = file.path(dir, paste0(view.name, '.rga')),
+             envir = view.env)
+    info('OAuth ended for %s', view.name)
     
-    this$sites[[site.id]] <- site
-  }, list.files(path = config$sites$dir, pattern = '\\.json$')
+    this$views[[view.name]] <- view.env
+  }, list.files(path = config$ga$dir, full.names = T, pattern = '\\.json$')
   )
-  info('sites loading finished. sites = %s', this$sites)
+  info('loading GA info finished. # of views = %d', length(this$views))
 
-  # site.id를 이용해 view.id 조회
-  get_view_id <- function(site.id) {
-    debug('get_view_id(): site.id = %s', site.id)
-    view.id <- this$sites[[site.id]]$view_id
-    debug('get_view_id(): view.id = %s', view.id)
-    view.id
-  }
-  
   # GA로부터 데이터 조회
-  getData <- function(site.id, ...) {
+  getData <- function(view.name, ...) {
     args <- list(...)[[1]]
-    debug('getData(): site.id = %s, args = %s', site.id, args)
+    debug('getData(): view.name = %s, args = %s', view.name, args)
     
-    view.id <- get_view_id(site.id)
-    debug('view.id = %s', view.id)
-    
-    ga <- this[[get_ga_name(site.id)]]
+    view.env <- this$views[[view.name]]
+    view.id <- view.env$view_id
+    ga <- view.env$ga
     
     data <- ga$getData(ids = view.id,
                        start.date = args[['start-date']], 
@@ -92,19 +82,20 @@ gaplotr <- function(config.json = NULL) {
     data
   }
 
-  # 차트 이미지를 생성
-  # - type: { 'bar', 'line' }
-  this$generateChart <- function(site.id, type, params, title, filename) {
-    debug('generateChart(): site.id=%s, type=%s, params=%s', site.id, type, params)
+  # 차트 이미지를 생성.
+  # plot을 그린 뒤 저장하는 것이 아니고, 저장위치(파일)를 정해두고 그쪽에 그리는 것임.
+  # - type: { 'bar', 'line', 'table' }
+  this$generateChart <- function(view.name, type, params, title, filename) {
+    debug('generateChart(): view.name=%s, type=%s, params=%s', view.name, type, params)
 
     # 차트용 데이터 fetch. 유효한 캐쉬가 없으면 getData()를 호출하여 직접 가져옴
-    data <- cache$get(site.id, params, getData)
+    data <- cache$get(view.name, params, getData)
     
     # dimension과 metric 추출 ('ga:visits' -> 'visit'로 변경)
     dimensions <- gsub('^ga:', '', params$dimensions)
     metrics <- gsub('^ga:', '', params$metrics)
 
-    # 차트 render
+    # 차트 renderer 지정
     renderer.func <- function() {
       if (type != 'table') {
         plotter$chartRenderer(data, type, dimensions, metrics, title)

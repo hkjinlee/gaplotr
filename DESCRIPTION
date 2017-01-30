@@ -9,8 +9,6 @@ BugReports: https://github.com/hkjinlee/gaplotr/issues
 Depends:
     R (>= 3.0.0),
     rga,
-    RCurl,
-    httr,
     ggplot2,
     jsonlite,
     digest

@@ -4,7 +4,7 @@ library(gaplotr)
 
 gaplotr <- gaplotr::gaplotr()
 
-site.id <- 'onestore_app'
+view.name <- 'onestore_app'
 params <- list(
   dimensions   = "ga:date",
   metrics      = c("ga:users", "ga:newUsers"),
@@ -13,6 +13,6 @@ params <- list(
 )
 chart.title <- '차트'
 
-gaplotr$generateChart(site.id, 'line', params, chart.title, 'linechart.png')
-gaplotr$generateChart(site.id, 'bar', params, chart.title, 'barchart.png')
-gaplotr$generateChart(site.id, 'table', params, chart.title, 'table.png')
+gaplotr$generateChart(view.name, 'line', params, chart.title, 'linechart.png')
+gaplotr$generateChart(view.name, 'bar', params, chart.title, 'barchart.png')
+gaplotr$generateChart(view.name, 'table', params, chart.title, 'table.png')

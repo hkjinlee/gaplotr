@@ -10,13 +10,13 @@ loglevel <- function(loglevel) {
 } 
 
 # 디버깅용 로그메시지 출력용 함수
-log <- function(loglevel.out, ...) {
+log <- function(loglevel.out, prefix, ...) {
   if (loglevel.out <= .loglevel) {
-    cat(base::date(), sprintf(...), '\n', file=.out)
+    cat(base::date(), prefix, sprintf(...), '\n', file=.out)
   }
 }
 
-error <- function(...) log(1, ...)
-warn  <- function(...) log(2, ...)
-info  <- function(...) log(3, ...)
-debug <- function(...) log(4, ...)
+error <- function(...) log(1, '[ERROR]', ...)
+warn  <- function(...) log(2, '[WARN]', ...)
+info  <- function(...) log(3, '[INFO]', ...)
+debug <- function(...) log(4, '[DEBUG]', ...)

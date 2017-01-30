@@ -9,8 +9,8 @@ NAMESPACE
 man/**
 
 # rga의 OAuth 인증정보 파일
-sites/*.json
-sites/*.rga
+ga/*.json
+ga/*.rga
 
 # 생성되는 파일들
 cache/**
