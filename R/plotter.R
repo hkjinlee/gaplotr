@@ -10,14 +10,14 @@ plotter.new <- function(config, dict) {
   
   this <- new.env()
 
-  # ggplot2에서 한글 깨지지 않도록 설정
+  # ggplot2용 한글 설정
   text <- ggplot2::theme_get()$text
   text$family <- config$fontfamily
   ggplot2::theme_update(text=text)
   
   # table용 한글 설정
   text.gpar <- grid::gpar(fontfamily = config$fontfamily, fontsize = 12)
-  table.theme <- gridExtra::ttheme_default(base_size = 8)
+  table.theme <- gridExtra::ttheme_default(base_family = config$fontfamily, base_size = 8)
   
   # 그래프의 단위를 '백', '천', '만' 등으로 변환
   transformUnit <- function(...) {
