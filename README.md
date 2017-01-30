@@ -1,18 +1,39 @@
-# GAplotR 프로젝트
+# GAplotR
 
-## 개요
-- 간단하게 Google Analytics 데이터를 불러와 차트 이미지를 만들어주는 프로젝트
+## Overview
+GAplotR is a simple tool which generates chart image files from Google Analytics data. Its purpose is:
 
-## 초기설정
-- etc/config.json.default를 복사해서 etc/config.json 파일 생성
-- sites/sample.json.default를 복사/편집해서 sites/{sitename}.json 파일 생성
-```{json}
-{
-  "ga:view_id": "xxxxxxxxx"
-}
+- Query Google Analytics data by its API (using [rga](https://github.com/skardhamar/rga) package)
+- Generate chart image (using [ggplot2](https://github.com/tidyverse/ggplot2) package)
+
+## Installation
+GAplotR is still under development. You can install this package by using [devtools](https://github.com/hadley/devtools/)
+```{r}
+library(devtools)
+install_github('hkjinlee/gaplotr)
 ```
 
-## 파일 설명
-- etc/: 전체 환경설정 및 dimension, metric에 대한 사전 파일
-- sites/: GA 사이트별 접속정보 (사이트 식별자 및 view_id)
-- rserve/: 본 프로젝트를 Rserve 환경에서 이용할 때 활용가능한 helper script들
+## Sites configuration
+You need to start from adding new site configuration. Each site corresponds to a specific [view of Google Analytics](https://support.google.com/analytics/answer/2649553?hl=en). You can add multiple sites by providing id of those views.
+
+### Configuration file format: JSON
+Create `site` directory under your working directory, and put a per-site configuration file there, which looks like this. Change `view_id` to one of your own.
+```{json}
+{
+  'view_id': 'ga:XXXXXXX'
+}
+```
+### Multiple configuration files
+You can add as many sites at the same time. Configuration files can have any name you like, once it has '.json' extension.
+```{sh}
+hkjinlee-mac:sites hkjinlee$ ls
+onestore_app.json    onestore_web.json
+```
+
+## Usage
+```{r}
+library(gaplotr)
+
+# default configuration
+gaplotr <- gaplotr::gaplotr()
+```
