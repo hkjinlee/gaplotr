@@ -68,7 +68,6 @@ plotter.new <- function(config, dict) {
       
     table.grob <- gridExtra::tableGrob(head(data, maxrows), 
                                        rows = NULL, cols = cols, 
-                                       ,
                                        theme = table.theme
     )
     
@@ -80,6 +79,8 @@ plotter.new <- function(config, dict) {
   
   # 생성된 차트를 파일로 저장하고 path를 리턴
   this$save <- function(renderer.func, file.name) {
+    info('save() started: filename = "%s"', file.name)
+    
     # 파일저장 디렉토리 없으면 생성
     if (!file.exists(config$dir)) {
       dir.create(config$dir)
@@ -91,7 +92,7 @@ plotter.new <- function(config, dict) {
     renderer.func()
     grDevices::dev.off()
 
-    info('Generated figure = %s', file.path)
+    info('save() finished')
     file.path
   }
   
