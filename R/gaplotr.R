@@ -37,7 +37,7 @@ gaplotr <- function(config.json = NULL) {
   info('END Initialization of cache, dict, plotter...')
 
   # OAuth 인증용 기본객체 생성
-  app <- httr::oauth_app('google', key = config.ga.client_id, secret = config.ga.client_secret)
+  app <- httr::oauth_app('google', key = config$ga$client_id, secret = config$ga$client_secret)
   endpoint <- httr::oauth_endpoints('google')
   
   # GA로부터 데이터 조회
