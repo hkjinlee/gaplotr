@@ -8,10 +8,10 @@ cache.new <- function(config) {
 
   # 해당 데이터가 캐시되어있으면 그대로 리턴하고, 없으면 get.func를 호출해 생성
   # 캐시 조건: 파일이 존재하고 최종변경시각이 expire.hour 이내
-  this$get <- function(view.name, access.token, obj, get.func) {
+  this$get <- function(ga_params, obj, get.func) {
     debug('get() started')
     
-    cache.dir <- file.path(config$dir, view.name)
+    cache.dir <- file.path(config$dir, ga_params$site_name)
     if (!file.exists(cache.dir)) {
       dir.create(cache.dir, recursive=T)
     }
@@ -22,7 +22,7 @@ cache.new <- function(config) {
       load(cache.file)
     } else {
       info('cache invalid or old for %s', cache.file)
-      data <- get.func(view.name, access.token, obj)
+      data <- get.func(ga_params, obj)
       save(data, file=cache.file)
     }
     

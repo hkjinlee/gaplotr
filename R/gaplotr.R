@@ -4,7 +4,7 @@
 #' @details etc
 
 #' @import jsonlite
-#' @importFrom httr oauth_app oauth_endpoints Token2.0
+#' @importFrom httr oauth_app oauth_endpoints Token2.0 
 #' @import googleAuthR
 #' @import googleAnalyticsR
 
@@ -40,55 +40,59 @@ gaplotr <- function(config.json = NULL) {
   app <- httr::oauth_app('google', key = config$ga$client_id, secret = config$ga$client_secret)
   endpoint <- httr::oauth_endpoints('google')
   
+  # 차트 이미지를 생성.
+  # plot을 그린 뒤 저장하는 것이 아니고, 저장위치(파일)를 정해두고 그쪽에 그리는 것임.
+  # - type: { 'bar', 'line', 'table' }
+  this$generateChart <- function(ga_params = list(site_name = NULL, view_id = NULL, access_token = NULL),
+                                 chart_params = list(title = NULL, type = NULL, filename = NULL),
+                                 query_params) {
+ #   debug('generateChart(): ga_params=%s, chart_params=%s, query_params=%s', ga_params, chart_params, query_params)
+
+    # 차트용 데이터 fetch. 유효한 캐쉬가 없으면 getData()를 호출하여 직접 가져옴
+debug('before cache$get')
+    data <- cache$get(ga_params, query_params, getData)
+debug('afer cache$get')
+    
+    # dimension과 metric 추출 ('ga:visits' -> 'visit'로 변경)
+    dimensions <- gsub('^ga:', '', query_params$dimensions)
+    metrics <- gsub('^ga:', '', query_params$metrics)
+
+    # 차트 renderer 지정
+    renderer.func <- function() {
+      if (chart_params$type != 'table') {
+        plotter$chartRenderer(data, chart_params$type, dimensions, metrics, chart_params$title)
+      } else {
+        plotter$tableRenderer(data, dimensions, metrics, chart_params$title)
+      }
+    }
+
+    # 차트 저장
+    file.path <- plotter$save(renderer.func, chart_params$filename)
+    
+    return(file.path)
+  }
+  
   # GA로부터 데이터 조회
-  getData <- function(view.id, access.token, ...) {
-    args <- list(...)[[1]]
-    debug('getData(): view.name = %s, args = %s', view.id, args)
+  getData <- function(ga_params, query_params) {
+    #debug('getData(): view_id = %s, query_params = %s', ga_params$view_id, query_params)
     
     # accessToken 정보 설정
     token <- httr::Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
-                          credentials = list(access_token = access.token),
+                          credentials = list(access_token = ga_params$access_token),
                           params = list(as_header = T)
     )
     googleAuthR::gar_auth(token = token)
     
     # 데이터 조회
-    data <- googleAnalyticsR::google_analytics_4(view.id,
-                       date_range = c(args[['start-date']], args[['end_date']]), 
-                       dimensions = args$dimensions, 
-                       metrics = args$metrics
+    data <- googleAnalyticsR::google_analytics_4(ga_params$view_id,
+                       date_range = c(query_params[['start-date']], query_params[['end-date']]), 
+                       dimensions = unlist(query_params$dimensions), 
+                       metrics = unlist(query_params$metrics)
     )
+
     debug('getData(): data = %s', data)
     data
   }
 
-  # 차트 이미지를 생성.
-  # plot을 그린 뒤 저장하는 것이 아니고, 저장위치(파일)를 정해두고 그쪽에 그리는 것임.
-  # - type: { 'bar', 'line', 'table' }
-  this$generateChart <- function(view_id, access_token, type, params, title, filename) {
-    debug('generateChart(): view_id=%s, type=%s, params=%s', view_id, type, params)
-
-    # 차트용 데이터 fetch. 유효한 캐쉬가 없으면 getData()를 호출하여 직접 가져옴
-    data <- cache$get(view_id, access_token, params, getData)
-    
-    # dimension과 metric 추출 ('ga:visits' -> 'visit'로 변경)
-    dimensions <- gsub('^ga:', '', params$dimensions)
-    metrics <- gsub('^ga:', '', params$metrics)
-
-    # 차트 renderer 지정
-    renderer.func <- function() {
-      if (type != 'table') {
-        plotter$chartRenderer(data, type, dimensions, metrics, title)
-      } else {
-        plotter$tableRenderer(data, dimensions, metrics, title)
-      }
-    }
-
-    # 차트 저장
-    file.path <- plotter$save(renderer.func, filename)
-    
-    return(file.path)
-  }
-  
   return(this)
 }
