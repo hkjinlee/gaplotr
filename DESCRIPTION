@@ -8,7 +8,9 @@ URL: http://github.com/hkjinlee/gaplotr
 BugReports: https://github.com/hkjinlee/gaplotr/issues
 Depends:
     R (>= 3.0.0),
-    rga,
+    httr,
+    gooleAuthR,
+    googleAnalyticsR,
     ggplot2,
     jsonlite,
     digest

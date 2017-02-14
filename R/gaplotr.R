@@ -4,7 +4,9 @@
 #' @details etc
 
 #' @import jsonlite
-#' @import rga
+#' @importFrom httr oauth_app, oauth_endpoints, Token2.0
+#' @import googleAuthR
+#' @import googleAnalyticsR
 
 #'
 #' @export
@@ -33,50 +35,28 @@ gaplotr <- function(config.json = NULL) {
   plotter <- plotter.new(config$plotter, dict)
 
   info('END Initialization of cache, dict, plotter...')
+
+  # OAuth 인증용 기본객체 생성
+  app <- httr::oauth_app('google', key = config.ga.client_id, secret = client.ga.client_secret)
+  endpoint <- httr::oauth_endpoints('google')
   
-  # 사이트 정보 로딩 및 OAuth 실행
-  # 'onestore_app'이라는 view가 있을 경우
-  # - this$views는 list
-  # - this$views$onestore_app은 environment
-  # - this$views$onestore_app$view_id에 view id 저장
-  # - this$views$onestore_app$rga에 rga 객체 저장
-  this$views <- list()
-  Map(function(view.json) {
-    info('loading GA info from %s', view.json)
-    view.name <- gsub('\\.json$', '', basename(view.json))
-    dir <- dirname(view.json)
-
-    # JSON파일로부터 환경 불러옴
-    view.env <- list2env(jsonlite::fromJSON(view.json))
-
-    # OAuth 인증
-    info('OAuth started: view.name = %s', view.name)
-    rga::rga.open(instance = 'ga', 
-             client.id = config$ga$client_id,
-             client.secret = config$ga$client_secret,
-             where = file.path(dir, paste0(view.name, '.rga')),
-             envir = view.env)
-    info('OAuth ended for %s', view.name)
-    
-    this$views[[view.name]] <- view.env
-  }, list.files(path = config$ga$dir, full.names = T, pattern = '\\.json$')
-  )
-  info('loading GA info finished. # of views = %d', length(this$views))
-
   # GA로부터 데이터 조회
-  getData <- function(view.name, ...) {
+  getData <- function(view.id, access.token, ...) {
     args <- list(...)[[1]]
     debug('getData(): view.name = %s, args = %s', view.name, args)
     
-    view.env <- this$views[[view.name]]
-    view.id <- view.env$view_id
-    ga <- view.env$ga
+    # accessToken 정보 설정
+    token <- Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
+                          credentials = list(access_token = access.token),
+                          params = list(as_header = T)
+    )
+    googleAuthR::gar_auth(token = token)
     
-    data <- ga$getData(ids = view.id,
-                       start.date = args[['start-date']], 
-                       end.date = args[['end-date']],
-                       dimensions = paste(args$dimensions, collapse=','), 
-                       metrics = paste(args$metrics, collapse=',')
+    # 데이터 조회
+    data <- googleAnalyticsR::google_analytics_4(view.id,
+                       date_range = c(args[['start-date']], args[['end_date']]), 
+                       dimensions = args$dimensions, 
+                       metrics = args$metrics
     )
     debug('getData(): data = %s', data)
     data
@@ -85,11 +65,11 @@ gaplotr <- function(config.json = NULL) {
   # 차트 이미지를 생성.
   # plot을 그린 뒤 저장하는 것이 아니고, 저장위치(파일)를 정해두고 그쪽에 그리는 것임.
   # - type: { 'bar', 'line', 'table' }
-  this$generateChart <- function(view.name, type, params, title, filename) {
-    debug('generateChart(): view.name=%s, type=%s, params=%s', view.name, type, params)
+  this$generateChart <- function(view.id, access.token, type, params, title, filename) {
+    debug('generateChart(): view.id=%s, type=%s, params=%s', view.id, type, params)
 
     # 차트용 데이터 fetch. 유효한 캐쉬가 없으면 getData()를 호출하여 직접 가져옴
-    data <- cache$get(view.name, params, getData)
+    data <- cache$get(view.id, access.token, params, getData)
     
     # dimension과 metric 추출 ('ga:visits' -> 'visit'로 변경)
     dimensions <- gsub('^ga:', '', params$dimensions)
