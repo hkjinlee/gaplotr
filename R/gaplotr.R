@@ -65,11 +65,11 @@ gaplotr <- function(config.json = NULL) {
   # 차트 이미지를 생성.
   # plot을 그린 뒤 저장하는 것이 아니고, 저장위치(파일)를 정해두고 그쪽에 그리는 것임.
   # - type: { 'bar', 'line', 'table' }
-  this$generateChart <- function(view.id, access.token, type, params, title, filename) {
-    debug('generateChart(): view.id=%s, type=%s, params=%s', view.id, type, params)
+  this$generateChart <- function(view_id, access_token, type, params, title, filename) {
+    debug('generateChart(): view_id=%s, type=%s, params=%s', view_id, type, params)
 
     # 차트용 데이터 fetch. 유효한 캐쉬가 없으면 getData()를 호출하여 직접 가져옴
-    data <- cache$get(view.id, access.token, params, getData)
+    data <- cache$get(view_id, access_token, params, getData)
     
     # dimension과 metric 추출 ('ga:visits' -> 'visit'로 변경)
     dimensions <- gsub('^ga:', '', params$dimensions)
