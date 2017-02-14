@@ -43,7 +43,7 @@ gaplotr <- function(config.json = NULL) {
   # GA로부터 데이터 조회
   getData <- function(view.id, access.token, ...) {
     args <- list(...)[[1]]
-    debug('getData(): view.name = %s, args = %s', view.name, args)
+    debug('getData(): view.name = %s, args = %s', view.id, args)
     
     # accessToken 정보 설정
     token <- Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
