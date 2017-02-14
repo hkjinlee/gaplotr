@@ -46,7 +46,7 @@ gaplotr <- function(config.json = NULL) {
     debug('getData(): view.name = %s, args = %s', view.id, args)
     
     # accessToken 정보 설정
-    token <- Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
+    token <- httr::Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
                           credentials = list(access_token = access.token),
                           params = list(as_header = T)
     )
