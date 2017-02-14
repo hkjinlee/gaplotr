@@ -7,9 +7,10 @@ Authors@R: person("Heonkyu", "Jin", email = "heonkyu.jin@gmail.com",
 URL: http://github.com/hkjinlee/gaplotr
 BugReports: https://github.com/hkjinlee/gaplotr/issues
 Depends:
-    R (>= 3.0.0),
+    R (>= 3.0.0)
+Imports:
     httr,
-    gooleAuthR,
+    googleAuthR,
     googleAnalyticsR,
     ggplot2,
     jsonlite,
@@ -19,4 +20,4 @@ LazyData: true
 Depends:
 Suggests:
     testthat
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

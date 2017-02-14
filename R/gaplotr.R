@@ -4,7 +4,7 @@
 #' @details etc
 
 #' @import jsonlite
-#' @importFrom httr oauth_app, oauth_endpoints, Token2.0
+#' @importFrom httr oauth_app oauth_endpoints Token2.0
 #' @import googleAuthR
 #' @import googleAnalyticsR
 
