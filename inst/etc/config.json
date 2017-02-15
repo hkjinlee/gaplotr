@@ -2,11 +2,11 @@
   // 로그메시지 출력 레벨
   "loglevel": "debug",
   
-  // GA 설정: 구글 OAuth 실행시 연결될 클라이언트를 "LINE statsbot"으로 설정함
+  // GA 설정: 구글 OAuth 실행시 연결될 클라이언트를 "gaplotr"로 설정함
   "ga": {
     "dir": "ga",
-    "client_id": "63451810083-rnehcshmkhvs0uabbdosm39mi96dentr.apps.googleusercontent.com",
-    "client_secret": "zU1bJ-Az21_6CzU0-zNVQvtX"
+    "client_id": "505613136082-m9ikblkeg33scks0i57p3hok3teiuipk.apps.googleusercontent.com",
+    "client_secret": "hdV7QMMj5fHCah5vv5UBD_xI"
   },
   
   // plotter용 설정
