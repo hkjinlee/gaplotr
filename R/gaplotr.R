@@ -8,9 +8,7 @@
 #' @import googleAuthR
 #' @import googleAnalyticsR
 
-AUTH_CLIENT_ID <- '505613136082-m9ikblkeg33scks0i57p3hok3teiuipk.apps.googleusercontent.com'
-AUTH_CLIENT_SECRET <- 'hdV7QMMj5fHCah5vv5UBD_xI'
-AUTH_SCOPES <- 'https://www.googleapis.com/auth/analytics.readonly'
+DEFAULT_AUTH_SCOPES <- 'https://www.googleapis.com/auth/analytics.readonly'
 
 #'
 #' @export
@@ -45,9 +43,9 @@ gaplotr <- function(config.json = NULL) {
   endpoint <- httr::oauth_endpoints('google')
   
   # googleAuthR 기본설정
-  options(googleAuthR.client_id = AUTH_CLIENT_ID,
-          googleAuthR.client_secret = AUTH_CLIENT_SECRET,
-          googleAuthR.scopes.selected = AUTH_SCOPES,
+  options(googleAuthR.client_id = config$ga$client_id,
+          googleAuthR.client_secret = config$ga$client_secret,
+          googleAuthR.scopes.selected = DEFAULT_AUTH_SCOPES,
           googleAuthR.httr_oauth_cache = F)
   
   # 사이트 정보 로딩 및 OAuth 실행
@@ -112,11 +110,12 @@ gaplotr <- function(config.json = NULL) {
     debug('getData(): view_id = %s', ga_params$view_id)
     
     # accessToken이 없다면 기존 OAuth 인증결과를 가져옴
-    credentials <- ifelse(is.null(ga_params$access_token),
-                          this$views[[ga_params$site_name]]$credentials,
-                          list(access_token = ga_params$access_token)
-                          )
-
+    if (is.null(ga_params$access_token)) {
+      credentials <- this$views[[ga_params$site_name]]$credentials
+    } else {
+      credentials <- list(access_token = ga_params$access_token)
+    }
+    
     # accessToken 정보 설정
     token <- httr::Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
                                 credentials = credentials, params = list(as_header = T)
