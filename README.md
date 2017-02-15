@@ -3,14 +3,18 @@
 ## Overview
 GAplotR is a simple tool which generates chart image files from Google Analytics data. Its purpose is:
 
-- Query Google Analytics data by its API (using [rga](https://github.com/skardhamar/rga) package)
+- Query Google Analytics data by its API (using [googleAnalyticsR](https://github.com/MarkEdmondson1234/googleAnalyticsR) package)
 - Generate chart image (using [ggplot2](https://github.com/tidyverse/ggplot2) package)
 
 ## Key Features
 
-- Supports Line chart, Bar chart, and Table
-- For Line and Bar chart, can display multiple metrics at the same time.
-- Output format: PNG
+- Data from Google Analytics
+  - Can do OAuth itself, or get credentials(access tokens and refresh tokens) from outside
+  - Can cache the latest data to reduce the response time and manage API quota
+- Chart generation
+  - Supports Line chart, Bar chart, and Table
+  - For Line and Bar chart, can display multiple metrics at the same time.
+  - Output format: PNG
 
 ## Installation
 GAplotR is still under development. You can install this package by using [devtools](https://github.com/hadley/devtools/)
@@ -26,6 +30,7 @@ You need to start from adding new [views of Google Analytics](https://support.go
 Create `ga` directory under your working directory, and put a per-site configuration file there, which looks like this. Change `view_id` to one of your own.
 ```{json}
 {
+  "site_name": "some_project"
   "view_id": "ga:XXXXXXX"
 }
 ```
@@ -39,17 +44,12 @@ onestore_app.json    onestore_web.json
 ## Usage
 
 ### Authentication on the first execution
+- gaplotr caches the credentials after the first authentication is successfully finished. The credentials will be written in the JSON file per view.
 
 ```{r}
 library(gaplotr)
 
-gaplotr <- gaplotr::gaplotr('path/to/configfile.json')
-```
-
-```
-Mon Jan 30 16:29:40 2017 OAuth started: view.name = onestore_app 
-Browse URL: https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/analytics.readonly&state=%2Fprofile&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=63451810083-rnehcshmkhvs0uabbdosm39mi96dentr.apps.googleusercontent.com&approval_prompt=force&access_type=offline 
-Please enter code here: 
+gaplotr <- gaplotr::gaplotr()
 ```
 
 ### Customization
@@ -62,19 +62,33 @@ gaplotr <- gaplotr::gaplotr('path/to/configfile.json')
 ```
 
 ### Execution
-Default chart output directory is `figure` under working directory.
+The example below will generate three charts, of which output directory is `figure` under `cwd`.
 
 ```{r}
-view.name <- 'onestore_app'
-params <- list(
+library(gaplotr)
+
+gaplotr <- gaplotr::gaplotr()
+
+getChartParams <- function(type) {
+  list(
+    type = type,
+    title = paste(type, '차트'),
+    filename = paste0(type, 'chart.png')
+  )
+}
+
+ga_params <- list(
+  site_name = 'onestore_app',
+  view_id = 'XXXXXXXX'
+)
+query <- list(
   dimensions   = "ga:date",
   metrics      = c("ga:users", "ga:newUsers"),
   `start-date` = "7daysAgo",
   `end-date`   = "today"
 )
-chart.title <- '차트'
 
-gaplotr$generateChart(view.name, 'line', params, chart.title, 'linechart.png')
-gaplotr$generateChart(view.name, 'bar', params, chart.title, 'barchart.png')
-gaplotr$generateChart(view.name, 'table', params, chart.title, 'table.png')
+gaplotr$generateChart(ga_params, getChartParams('line'), query)
+gaplotr$generateChart(ga_params, getChartParams('bar'), query)
+gaplotr$generateChart(ga_params, getChartParams('table'), query)
 ```

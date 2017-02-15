@@ -8,6 +8,10 @@
 #' @import googleAuthR
 #' @import googleAnalyticsR
 
+AUTH_CLIENT_ID <- '505613136082-m9ikblkeg33scks0i57p3hok3teiuipk.apps.googleusercontent.com'
+AUTH_CLIENT_SECRET <- 'hdV7QMMj5fHCah5vv5UBD_xI'
+AUTH_SCOPES <- 'https://www.googleapis.com/auth/analytics.readonly'
+
 #'
 #' @export
 gaplotr <- function(config.json = NULL) {
@@ -40,19 +44,50 @@ gaplotr <- function(config.json = NULL) {
   app <- httr::oauth_app('google', key = config$ga$client_id, secret = config$ga$client_secret)
   endpoint <- httr::oauth_endpoints('google')
   
+  # googleAuthR 기본설정
+  options(googleAuthR.client_id = AUTH_CLIENT_ID,
+          googleAuthR.client_secret = AUTH_CLIENT_SECRET,
+          googleAuthR.scopes.selected = AUTH_SCOPES,
+          googleAuthR.httr_oauth_cache = F)
+  
+  # 사이트 정보 로딩 및 OAuth 실행
+  # 'onestore_app'이라는 account가 있을 경우, 
+  # - this$views$onestore_app$view_id가 원스토어의 GA view id
+  # - this$views$onestore_app$access_token
+  # - this$views$onestore_app$refresh_token
+  Map(function(view.json) {
+    info('loading GA info from %s', view.json)
+
+    # JSON파일로부터 환경 불러옴
+    view <- jsonlite::fromJSON(view.json)
+    
+    # OAuth 인증
+    if (is.null(view$credentials)) {
+      info('OAuth cache not found. Requesting auth.')
+      token <- gar_auth()
+      view <- modifyList(view, list(credentials = token$credentials))
+    }
+    info('OAuth ended. credentials = %s', view$credentials)
+    
+    # 파일 저장
+    write(jsonlite::toJSON(view, auto_unbox = T, pretty = T), file = view.json)
+    
+    view
+  }, list.files(path = config$ga$dir, full.names = T, pattern = '\\.json$')
+  )
+  info('loading GA info finished. # of views = %d', length(this$views))  
+  
   # 차트 이미지를 생성.
   # plot을 그린 뒤 저장하는 것이 아니고, 저장위치(파일)를 정해두고 그쪽에 그리는 것임.
   # - type: { 'bar', 'line', 'table' }
   this$generateChart <- function(ga_params = list(site_name = NULL, view_id = NULL, access_token = NULL),
                                  chart_params = list(title = NULL, type = NULL, filename = NULL),
                                  query_params) {
- #   debug('generateChart(): ga_params=%s, chart_params=%s, query_params=%s', ga_params, chart_params, query_params)
+    debug('generateChart() started')
 
     # 차트용 데이터 fetch. 유효한 캐쉬가 없으면 getData()를 호출하여 직접 가져옴
-debug('before cache$get')
     data <- cache$get(ga_params, query_params, getData)
-debug('afer cache$get')
-    
+
     # dimension과 metric 추출 ('ga:visits' -> 'visit'로 변경)
     dimensions <- gsub('^ga:', '', query_params$dimensions)
     metrics <- gsub('^ga:', '', query_params$metrics)
@@ -74,15 +109,20 @@ debug('afer cache$get')
   
   # GA로부터 데이터 조회
   getData <- function(ga_params, query_params) {
-    #debug('getData(): view_id = %s, query_params = %s', ga_params$view_id, query_params)
+    debug('getData(): view_id = %s', ga_params$view_id)
     
+    # accessToken이 없다면 기존 OAuth 인증결과를 가져옴
+    credentials <- ifelse(is.null(ga_params$access_token),
+                          this$views[[ga_params$site_name]]$credentials,
+                          list(access_token = ga_params$access_token)
+                          )
+
     # accessToken 정보 설정
     token <- httr::Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
-                          credentials = list(access_token = ga_params$access_token),
-                          params = list(as_header = T)
+                                credentials = credentials, params = list(as_header = T)
     )
     googleAuthR::gar_auth(token = token)
-    
+
     # 데이터 조회
     data <- googleAnalyticsR::google_analytics_4(ga_params$view_id,
                        date_range = c(query_params[['start-date']], query_params[['end-date']]), 

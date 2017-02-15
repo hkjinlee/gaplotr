@@ -1,7 +1,7 @@
 Package: gaplotr
 Title: Google Analytics PNG generator
 Description: Using Google Analytics API, generates PNG files
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: person("Heonkyu", "Jin", email = "heonkyu.jin@gmail.com",
                   role = c("aut", "cre"))
 URL: http://github.com/hkjinlee/gaplotr
