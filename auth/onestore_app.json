@@ -1,0 +1,10 @@
+{
+  "site_name": "onestore_app",
+  "view_id": "ga:103842051",
+  "credentials": {
+    "access_token": "ya29.GlvzAwxW6m9Wth8-_uekT--2qvO2gVuPc9CouobWDPh5Qn3DWghFGrFLJjo_vMASZpyhxW3-lLA3hK1OL_F8VlyFDpAXsIASgmUJdvEeIcPhyMAxfa3hhK9xBdXf",
+    "expires_in": 3600,
+    "refresh_token": "1/CwY2Vy21qobyDATqulNgPA2LNR2FXefSknT6m4OXwwo",
+    "token_type": "Bearer"
+  }
+}

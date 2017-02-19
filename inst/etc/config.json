@@ -2,9 +2,9 @@
   // 로그메시지 출력 레벨
   "loglevel": "debug",
   
-  // GA 설정: 구글 OAuth 실행시 연결될 클라이언트를 "gaplotr"로 설정함
-  "ga": {
-    "dir": "ga",
+  // 인증 설정: 구글 OAuth 실행시 연결될 클라이언트를 "gaplotr"로 설정함
+  "auth": {
+    "dir": "auth",
     "client_id": "505613136082-m9ikblkeg33scks0i57p3hok3teiuipk.apps.googleusercontent.com",
     "client_secret": "hdV7QMMj5fHCah5vv5UBD_xI"
   },
