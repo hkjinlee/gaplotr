@@ -17,7 +17,7 @@ cache.new <- function(config) {
     }
     cache.file <- file.path(cache.dir, digest::digest(obj, algo='md5'))
     
-    if (file.exists(cache.file) & Sys.time() - file.info(cache.file)$mtime > config$expire.hour) {
+    if (file.exists(cache.file) & Sys.time() - file.info(cache.file)$mtime > config$expire.hour / 24) {
       info('cache valid for %s', cache.file)
       load(cache.file)
     } else {
