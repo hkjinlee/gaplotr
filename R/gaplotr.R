@@ -94,9 +94,9 @@ gaplotr <- function(config.json = NULL) {
     # 차트 renderer 지정
     renderer.func <- function() {
       if (chart_params$type != 'table') {
-        plotter$chartRenderer(data, chart_params$type, dimensions, metrics, chart_params$title)
+        plotter$chartRenderer(data, chart_params$type, dimensions, metrics, chart_params$title, chart_params$lang)
       } else {
-        plotter$tableRenderer(data, dimensions, metrics, chart_params$title)
+        plotter$tableRenderer(data, dimensions, metrics, chart_params$title, chart_params$lang)
       }
     }
 

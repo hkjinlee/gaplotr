@@ -8,10 +8,10 @@ getChartParams <- function(type) {
   list(
     type = type,
     title = paste(type, '차트'),
-    filename = paste0(type, 'chart.png')
+    filename = paste0(type, 'chart.png'),
+    lang = 'ja'
   )
 }
-
 ga_params <- list(
   site_name = 'onestore_app',
   view_id = '103842051'

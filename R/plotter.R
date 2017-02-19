@@ -3,11 +3,23 @@
 #' @import grid
 #' @import gridExtra
 
+# 상수들
+UNITS <- list(
+  ko = list(
+    data = c(-1, 1e0, 1e2, 1e3, 1e4, 1e6, 1e8, 1e12, Inf),
+    labels = c('', '', '백', '천', '만', '백만', '억', '조', '')
+  ),
+  en = list(
+    data = c(-1, 1e0, 1e3, 1e6, 1e9, 1e12, Inf),
+    labels = c('', '', 'K', 'M', 'B', 'T', '')
+  ),
+  ja = list(
+    data = c(-1, 1e0, 1e2, 1e3, 1e4, 1e6, 1e8, 1e12, Inf),
+    labels = c('', '', '百', '千', '万', '百万', '億', '兆', '')
+  )
+)
+
 plotter.new <- function(config, dict) {
-  # 상수들
-  UNITS <- c(-1, 1e0, 1e2, 1e3, 1e4, 1e6, 1e8, 1e12, Inf)
-  UNITS.KO <- c('', '', '백', '천', '만', '백만', '억', '조', '')
-  
   this <- new.env()
 
   # ggplot2용 한글 설정
@@ -20,16 +32,19 @@ plotter.new <- function(config, dict) {
   table.theme <- gridExtra::ttheme_default(base_family = config$fontfamily, base_size = 8)
   
   # 그래프의 단위를 '백', '천', '만' 등으로 변환
-  transformUnit <- function(...) {
+  transformUnit <- function(lang = 'ko', ...) {
+    data = UNITS[[lang]]$data
+    labels = UNITS[[lang]]$labels
+    
     function(x) {
-      i <- findInterval(abs(x), UNITS)
-      paste0(format(round(x/UNITS[i], 1), trim=T, scientific=F, ...), UNITS.KO[i])
+      i <- findInterval(abs(x), data)
+      paste0(format(round(x/data[i], 1), trim=T, scientific=F, ...), labels[i])
     }
   }
   
   # 차트 객체를 생성
   # - type: { 'bar', 'line' }
-  this$chartRenderer <- function(data, type, dimensions, metrics, title) {
+  this$chartRenderer <- function(data, type, dimensions, metrics, title, lang = 'ko') {
     info('chartRenderer() started')
     debug('type = %s, dimensions = %s, metrics = %s', type, dimensions, metrics)
     
@@ -44,26 +59,25 @@ plotter.new <- function(config, dict) {
     }, 1:length(metrics), init=p)
     
     # 차트 제목 및 가로세로축 이름 설정
-    xlab <- dict$lookup('dimension', dimensions[1]) 
-    ylab <- paste(dict$lookup('metric', metrics), collapse=',')
+    xlab <- dict$lookup('dimension', dimensions[1], lang) 
+    ylab <- paste(dict$lookup('metric', metrics, lang), collapse=',')
     debug('xlab = %s, ylab = %s', xlab, ylab)
     p <- p + ggplot2::xlab(xlab) + ggplot2::ylab(ylab) + ggplot2::ggtitle(title)
    
     # 축 눈금값 변환
-    p <- p + ggplot2::scale_y_continuous(labels=transformUnit())
+    p <- p + ggplot2::scale_y_continuous(labels=transformUnit(lang))
     
     # 최종 차트 객체 반환
     plot(p)
   }
   
   # 테이블 객체 생성
-  this$tableRenderer <- function(data, dimensions, metrics, title, maxrows = 7) {
+  this$tableRenderer <- function(data, dimensions, metrics, title, lang = 'ko', maxrows = 7) {
     info('tableRederer() started')
     title.grob <- grid::textGrob(label = title, y = -1, gp = text.gpar)
     
     # dimension과 metric 번역
-    a <- dict$lookup('dimension', c(dimensions, metrics))
-    cols <- dict$lookup('metric', dict$lookup('dimension', c(dimensions, metrics)))
+    cols <- dict$lookup('metric', dict$lookup('dimension', c(dimensions, metrics), lang), lang)
     debug('cols = %s', cols)
       
     table.grob <- gridExtra::tableGrob(head(data, maxrows), 
