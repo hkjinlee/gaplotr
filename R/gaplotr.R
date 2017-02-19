@@ -53,6 +53,7 @@ gaplotr <- function(config.json = NULL) {
   # - this$views$onestore_app$view_id가 원스토어의 GA view id
   # - this$views$onestore_app$access_token
   # - this$views$onestore_app$refresh_token
+  this$views <- list()
   Map(function(view.json) {
     info('loading GA info from %s', view.json)
 
@@ -65,12 +66,12 @@ gaplotr <- function(config.json = NULL) {
       token <- gar_auth()
       view <- modifyList(view, list(credentials = token$credentials))
     }
-    info('OAuth ended. credentials = %s', view$credentials)
+    info('OAuth ended')
     
     # 파일 저장
     write(jsonlite::toJSON(view, auto_unbox = T, pretty = T), file = view.json)
     
-    view
+    this$views[[view$site_name]] <- view
   }, list.files(path = config$ga$dir, full.names = T, pattern = '\\.json$')
   )
   info('loading GA info finished. # of views = %d', length(this$views))  
@@ -113,12 +114,16 @@ gaplotr <- function(config.json = NULL) {
     if (is.null(ga_params$access_token)) {
       credentials <- this$views[[ga_params$site_name]]$credentials
     } else {
-      credentials <- list(access_token = ga_params$access_token)
+      credentials <- list(access_token = ga_params$access_token,
+                          refresh_token = ga_params$refresh_token)
     }
     
     # accessToken 정보 설정
     token <- httr::Token2.0$new(app = app, endpoint = endpoint, cache_path = F, 
-                                credentials = credentials, params = list(as_header = T)
+                                credentials = credentials, 
+                                params = list(as_header = T,
+                                              use_oob = F,
+                                              scope = DEFAULT_AUTH_SCOPES)
     )
     googleAuthR::gar_auth(token = token)
 
